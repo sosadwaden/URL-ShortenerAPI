@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 public class BaseConversionService {
 
     private static final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private char[] characters = alphabettoCharArray();
+    private char[] characters = alphabet.toCharArray();
     private int base = characters.length;
 
     /**

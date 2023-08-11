@@ -24,7 +24,10 @@ public class UrlService {
 
         Url entity = urlRepository.save(url);
 
-        return baseConversionService.encode(entity.getId());
+        String shortUrl = baseConversionService.encode(entity.getId());
+        entity.setShortUrl(shortUrl);
+        urlRepository.save(entity);
+        return shortUrl;
     }
 
     public String getOriginalUrl(String shortUrl) {

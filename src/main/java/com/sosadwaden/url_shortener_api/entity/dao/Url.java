@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalTime;
 import java.util.Date;
 
 @Getter
@@ -17,6 +16,9 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
+
+    @Column(name = "short_url")
+    private String shortUrl;
 
     @Column(name = "long_url", nullable = false)
     private String longUrl;
