@@ -15,6 +15,9 @@ public class UrlLongRequestDto {
     @ApiModelProperty(required = true, notes = "Long URL to convert to short")
     private String longUrl;
 
+    @ApiModelProperty(notes = "Short URL")
+    private String shortUrl;
+
     @ApiModelProperty(notes = "Expiration datetime of url")
     private Date expirationDate;
 }

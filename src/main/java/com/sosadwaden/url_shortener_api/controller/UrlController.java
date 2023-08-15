@@ -33,5 +33,12 @@ public class UrlController {
     public String convertToShortUrl(@RequestBody UrlLongRequestDto dto) {
         return urlService.convertToShortUrl(dto);
     }
+
+    @PostMapping("/set-short-url")
+    @ApiOperation(value = "Set short url", notes = "Allows you to manually set a short link")
+    public String setShortUrlName(@RequestBody UrlLongRequestDto dto) {
+        return urlService.setShortUrl(dto);
+    }
+
 }
 

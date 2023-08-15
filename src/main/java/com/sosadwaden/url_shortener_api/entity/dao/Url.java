@@ -13,7 +13,6 @@ import java.util.Date;
 public class Url {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private long id;
 
@@ -28,5 +27,4 @@ public class Url {
 
     @Column(name = "expiration_date")
     private Date expirationDate;
-
 }
