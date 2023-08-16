@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class WrongUrlException extends RuntimeException {
 
-    public WrongUrlException(String url) {
-        super(String.format("Wrong url format given %s", url));
+    public WrongUrlException(String message) {
+        super(message);
     }
 }

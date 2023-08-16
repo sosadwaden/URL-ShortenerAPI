@@ -3,6 +3,7 @@ package com.sosadwaden.url_shortener_api.service;
 import com.sosadwaden.url_shortener_api.entity.dao.Url;
 import com.sosadwaden.url_shortener_api.entity.dto.UrlLongRequestDto;
 import com.sosadwaden.url_shortener_api.repository.UrlRepository;
+import com.sosadwaden.url_shortener_api.service.exception.ShortUrlIsOccupiedException;
 import com.sosadwaden.url_shortener_api.service.exception.UrlNotFoundException;
 import com.sosadwaden.url_shortener_api.service.exception.WrongUrlException;
 import com.sosadwaden.url_shortener_api.util.UrlValidation;
@@ -17,10 +18,9 @@ import java.util.Date;
 public class UrlService {
 
     private final UrlRepository urlRepository;
-    private final BaseConversionService baseConversionService;
 
     public String getOriginalUrl(String shortUrl) {
-        long id = baseConversionService.decode(shortUrl);
+        long id = Base62.decode(shortUrl);
         Url url = urlRepository
                 .findById(id)
                 .orElseThrow(() -> new UrlNotFoundException(shortUrl));
@@ -36,7 +36,29 @@ public class UrlService {
     public String convertToShortUrl(UrlLongRequestDto dto) {
 
         if (!UrlValidation.validate(dto.getLongUrl())) {
-            throw new WrongUrlException(dto.getLongUrl());
+            String message = String.format("Incorrect url '%s'", dto.getLongUrl());
+            throw new WrongUrlException(message);
+        }
+
+        long id = urlRepository.findFirstMinId();
+
+        Url url = new Url();
+        url.setId(id);
+        url.setLongUrl(dto.getLongUrl());
+        url.setExpirationDate(dto.getExpirationDate());
+        url.setCreatedDate(new Date());
+
+        String shortUrl = Base62.encode(id);
+        url.setShortUrl(shortUrl);
+        urlRepository.save(url);
+        return shortUrl;
+    }
+
+    public String setShortUrl(UrlLongRequestDto dto) {
+
+        if (!UrlValidation.validate(dto.getLongUrl())) {
+            String message = String.format("Incorrect url '%s'", dto.getLongUrl());
+            throw new WrongUrlException(message);
         }
 
         Url url = new Url();
@@ -44,22 +66,12 @@ public class UrlService {
         url.setExpirationDate(dto.getExpirationDate());
         url.setCreatedDate(new Date());
 
-        Url entity = urlRepository.save(url);
+        long id = Base62.decode(dto.getShortUrl());
 
-        String shortUrl = baseConversionService.encode(entity.getId());
-        entity.setShortUrl(shortUrl);
-        urlRepository.save(entity);
-        return shortUrl;
-    }
-
-    public String setShortUrl(UrlLongRequestDto dto) {
-        // TODO Сделать проверку на то, что в БД есть/нет такого короткого Url
-        Url url = new Url();
-        url.setLongUrl(dto.getLongUrl());
-        url.setExpirationDate(dto.getExpirationDate());
-        url.setCreatedDate(new Date());
-
-        long id = baseConversionService.decode(dto.getShortUrl());
+        if (urlRepository.findById(id).isPresent()) {
+            String message = "This short url already use";
+            throw new ShortUrlIsOccupiedException(message);
+        }
 
         url.setId(id);
         url.setShortUrl(dto.getShortUrl());
